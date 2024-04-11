@@ -3,10 +3,11 @@
 package hsvimage
 
 import (
-	"github.com/spakin/hsvimage/hsvcolor"
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/spakin/hsvimage/hsvcolor"
 )
 
 // cmp was copied verbatim from the Go standard library's image_test.go file.
@@ -59,16 +60,16 @@ func TestImage(t *testing.T) {
 func TestSimpleColors(t *testing.T) {
 	// Define the set of colors to use in the image.
 	hsvColors := []hsvcolor.NHSVA{
-		{H: 0, S: 0, V: 0, A: 255},       // Black
-		{H: 0, S: 0, V: 255, A: 255},     // White
-		{H: 0, S: 255, V: 255, A: 255},   // Red
-		{H: 85, S: 255, V: 255, A: 255},  // Green
-		{H: 170, S: 255, V: 255, A: 255}, // Blue
-		{H: 43, S: 255, V: 255, A: 255},  // Yellow
-		{H: 0, S: 255, V: 255, A: 128},   // Half-transparent red
-		{H: 85, S: 64, V: 255, A: 255},   // Pale green
-		{H: 170, S: 255, V: 64, A: 255},  // Dark blue
-		{H: 205, S: 82, V: 143, A: 255},  // French lilac
+		{H: 0, S: 0, I: 0, A: 255},       // Black
+		{H: 0, S: 0, I: 255, A: 255},     // White
+		{H: 0, S: 255, I: 255, A: 255},   // Red
+		{H: 85, S: 255, I: 255, A: 255},  // Green
+		{H: 170, S: 255, I: 255, A: 255}, // Blue
+		{H: 43, S: 255, I: 255, A: 255},  // Yellow
+		{H: 0, S: 255, I: 255, A: 128},   // Half-transparent red
+		{H: 85, S: 64, I: 255, A: 255},   // Pale green
+		{H: 170, S: 255, I: 64, A: 255},  // Dark blue
+		{H: 205, S: 82, I: 143, A: 255},  // French lilac
 	}
 	rgbColors := []color.RGBA{
 		{R: 0, G: 0, B: 0, A: 255},       // Black
@@ -159,16 +160,16 @@ func TestImage64(t *testing.T) {
 func TestSimpleColors64(t *testing.T) {
 	// Define the set of colors to use in the image.
 	hsvColors := []hsvcolor.NHSVA64{
-		{H: 0, S: 0, V: 0, A: 65535},             // Black
-		{H: 0, S: 0, V: 65535, A: 65535},         // White
-		{H: 0, S: 65535, V: 65535, A: 65535},     // Red
-		{H: 21845, S: 65535, V: 65535, A: 65535}, // Green
-		{H: 43690, S: 65535, V: 65535, A: 65535}, // Blue
-		{H: 10923, S: 65535, V: 65535, A: 65535}, // Yellow
-		{H: 0, S: 65535, V: 65535, A: 32768},     // Half-transparent red
-		{H: 21845, S: 16384, V: 65535, A: 65535}, // Pale green
-		{H: 43690, S: 65535, V: 32768, A: 65535}, // Dark blue
-		{H: 52685, S: 21074, V: 36751, A: 65535}, // French lilac
+		{H: 0, S: 0, I: 0, A: 65535},             // Black
+		{H: 0, S: 0, I: 65535, A: 65535},         // White
+		{H: 0, S: 65535, I: 65535, A: 65535},     // Red
+		{H: 21845, S: 65535, I: 65535, A: 65535}, // Green
+		{H: 43690, S: 65535, I: 65535, A: 65535}, // Blue
+		{H: 10923, S: 65535, I: 65535, A: 65535}, // Yellow
+		{H: 0, S: 65535, I: 65535, A: 32768},     // Half-transparent red
+		{H: 21845, S: 16384, I: 65535, A: 65535}, // Pale green
+		{H: 43690, S: 65535, I: 32768, A: 65535}, // Dark blue
+		{H: 52685, S: 21074, I: 36751, A: 65535}, // French lilac
 	}
 	rgbColors := []color.RGBA64{
 		{R: 0, G: 0, B: 0, A: 65535},             // Black
@@ -259,16 +260,16 @@ func TestImageF64(t *testing.T) {
 func TestSimpleColorsF64(t *testing.T) {
 	// Define the set of colors to use in the image.
 	hsvColors := []hsvcolor.NHSVAF64{
-		{H: 0.0, S: 0.0, V: 0.0, A: 1.0},       // Black
-		{H: 0.0, S: 0.0, V: 1.0, A: 1.0},       // White
-		{H: 0.0, S: 1.0, V: 1.0, A: 1.0},       // Red
-		{H: 120.0, S: 1.0, V: 1.0, A: 1.0},     // Green
-		{H: 240.0, S: 1.0, V: 1.0, A: 1.0},     // Blue
-		{H: 60.0, S: 1.0, V: 1.0, A: 1.0},      // Yellow
-		{H: 0.0, S: 1.0, V: 1.0, A: 0.5},       // Half-transparent red
-		{H: 120.0, S: 0.25, V: 1.0, A: 1.0},    // Pale green
-		{H: 240.0, S: 1.0, V: 0.25, A: 1.0},    // Dark blue
-		{H: 290.0, S: 0.322, V: 0.561, A: 1.0}, // French lilac
+		{H: 0.0, S: 0.0, I: 0.0, A: 1.0},       // Black
+		{H: 0.0, S: 0.0, I: 1.0, A: 1.0},       // White
+		{H: 0.0, S: 1.0, I: 1.0, A: 1.0},       // Red
+		{H: 120.0, S: 1.0, I: 1.0, A: 1.0},     // Green
+		{H: 240.0, S: 1.0, I: 1.0, A: 1.0},     // Blue
+		{H: 60.0, S: 1.0, I: 1.0, A: 1.0},      // Yellow
+		{H: 0.0, S: 1.0, I: 1.0, A: 0.5},       // Half-transparent red
+		{H: 120.0, S: 0.25, I: 1.0, A: 1.0},    // Pale green
+		{H: 240.0, S: 1.0, I: 0.25, A: 1.0},    // Dark blue
+		{H: 290.0, S: 0.322, I: 0.561, A: 1.0}, // French lilac
 	}
 	rgbColors := []color.RGBA{
 		{R: 0, G: 0, B: 0, A: 255},       // Black

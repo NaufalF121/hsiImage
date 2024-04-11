@@ -56,7 +56,7 @@ func TestGrayToHSV(t *testing.T) {
 	for vi := uint32(0); vi <= 255; vi++ {
 		g := color.Gray{uint8(vi)}
 		hsv := NHSVAModel.Convert(g).(NHSVA)
-		if hsv.H != 0 || hsv.S != 0 || hsv.V != g.Y || hsv.A != 255 {
+		if hsv.H != 0 || hsv.S != 0 || hsv.I != g.Y || hsv.A != 255 {
 			t.Fatalf("Incorrectly mapped %#v to %#v", g, hsv)
 		}
 	}
@@ -90,7 +90,7 @@ func TestNRGBToNHSV(t *testing.T) {
 	for _, cEq := range colorEquivalences {
 		nrgba := color.NRGBA{cEq.RGB[0], cEq.RGB[1], cEq.RGB[2], 255}
 		nhsva := NHSVAModel.Convert(nrgba).(NHSVA)
-		if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.V != cEq.HSV[2] || nhsva.A != 255 {
+		if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.I != cEq.HSV[2] || nhsva.A != 255 {
 			t.Fatalf("Incorrectly mapped %s from %v to %v (expected %v)", cEq.Name, nrgba, nhsva, cEq.HSV)
 		}
 	}
@@ -106,12 +106,12 @@ func TestNRGBAToNHSVA(t *testing.T) {
 			nhsva := NHSVAModel.Convert(nrgba).(NHSVA)
 			if a == 0 {
 				// Special case for fully transparent colors
-				if nhsva.H != 0 || nhsva.S != 0 || nhsva.V != 0 || nhsva.A != 0 {
+				if nhsva.H != 0 || nhsva.S != 0 || nhsva.I != 0 || nhsva.A != 0 {
 					t.Fatalf("Incorrectly mapped %s from %v to %v (expected [0, 0, 0, 0])", cEq.Name, nrgba, nhsva)
 				}
 				continue
 			}
-			if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.V != cEq.HSV[2] || nhsva.A != a {
+			if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.I != cEq.HSV[2] || nhsva.A != a {
 				t.Fatalf("Incorrectly mapped %s from %v to %v (expected %v + %d)", cEq.Name, nrgba, nhsva, cEq.HSV, a)
 			}
 		}
@@ -225,7 +225,7 @@ func TestGrayToHSV64(t *testing.T) {
 	for vi := uint32(0); vi <= 65535; vi++ {
 		g := color.Gray16{uint16(vi)}
 		hsv := NHSVA64Model.Convert(g).(NHSVA64)
-		if hsv.H != 0 || hsv.S != 0 || hsv.V != g.Y || hsv.A != 65535 {
+		if hsv.H != 0 || hsv.S != 0 || hsv.I != g.Y || hsv.A != 65535 {
 			t.Fatalf("Incorrectly mapped %#v to %#v", g, hsv)
 		}
 	}
@@ -259,7 +259,7 @@ func TestNRGBToNHSV64(t *testing.T) {
 	for _, cEq := range colorEquivalences64 {
 		nrgba := color.NRGBA64{cEq.RGB[0], cEq.RGB[1], cEq.RGB[2], 65535}
 		nhsva := NHSVA64Model.Convert(nrgba).(NHSVA64)
-		if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.V != cEq.HSV[2] || nhsva.A != 65535 {
+		if nhsva.H != cEq.HSV[0] || nhsva.S != cEq.HSV[1] || nhsva.I != cEq.HSV[2] || nhsva.A != 65535 {
 			t.Fatalf("Incorrectly mapped %s from %v to %v (expected %v)", cEq.Name, nrgba, nhsva, cEq.HSV)
 		}
 	}
@@ -285,12 +285,12 @@ func TestNRGBAToNHSVA64(t *testing.T) {
 			nhsva := NHSVA64Model.Convert(nrgba).(NHSVA64)
 			if a == 0 {
 				// Special case for fully transparent colors
-				if nhsva.H != 0 || nhsva.S != 0 || nhsva.V != 0 || nhsva.A != 0 {
+				if nhsva.H != 0 || nhsva.S != 0 || nhsva.I != 0 || nhsva.A != 0 {
 					t.Fatalf("Incorrectly mapped %s from %v to %v (expected [0, 0, 0, 0])", cEq.Name, nrgba, nhsva)
 				}
 				continue
 			}
-			if !near16(nhsva.H, cEq.HSV[0]) || !near16(nhsva.S, cEq.HSV[1]) || !near16(nhsva.V, cEq.HSV[2]) || nhsva.A != a {
+			if !near16(nhsva.H, cEq.HSV[0]) || !near16(nhsva.S, cEq.HSV[1]) || !near16(nhsva.I, cEq.HSV[2]) || nhsva.A != a {
 				t.Fatalf("Incorrectly mapped %s from %v to %v (expected %v + %d)", cEq.Name, nrgba, nhsva, cEq.HSV, a)
 			}
 		}
@@ -391,7 +391,7 @@ func TestGrayToHSVF64(t *testing.T) {
 	for vi := uint32(0); vi <= 65535; vi++ {
 		g := color.Gray16{uint16(vi)}
 		hsv := NHSVAF64Model.Convert(g).(NHSVAF64)
-		if hsv.H != 0.0 || hsv.S != 0.0 || hsv.V != float64(g.Y)/65535.0 || hsv.A != 1.0 {
+		if hsv.H != 0.0 || hsv.S != 0.0 || hsv.I != float64(g.Y)/65535.0 || hsv.A != 1.0 {
 			t.Fatalf("Incorrectly mapped %#v to %#v", g, hsv)
 		}
 	}
@@ -434,7 +434,7 @@ func TestNRGBToNHSVF64(t *testing.T) {
 	for _, cEq := range colorEquivalencesF64 {
 		nrgba := color.NRGBA{cEq.RGB[0], cEq.RGB[1], cEq.RGB[2], 255}
 		nhsva := NHSVAF64Model.Convert(nrgba).(NHSVAF64)
-		if !nearF64(nhsva.H, cEq.HSV[0]) || !nearF64(nhsva.S, cEq.HSV[1]) || !nearF64(nhsva.V, cEq.HSV[2]) || !nearF64(nhsva.A, 1.0) {
+		if !nearF64(nhsva.H, cEq.HSV[0]) || !nearF64(nhsva.S, cEq.HSV[1]) || !nearF64(nhsva.I, cEq.HSV[2]) || !nearF64(nhsva.A, 1.0) {
 			t.Fatalf("Incorrectly mapped %s from %v to %v (expected %v)", cEq.Name, nrgba, nhsva, cEq.HSV)
 		}
 	}

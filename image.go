@@ -5,7 +5,7 @@ The code was largely adapted from code in the Go standard library.
 package hsvimage
 
 import (
-	"github.com/spakin/hsvimage/hsvcolor"
+	"hsiImage/hsvcolor"
 	"image"
 	"image/color"
 )
@@ -40,7 +40,7 @@ func (p *NHSVA) NHSVAAt(x, y int) hsvcolor.NHSVA {
 	}
 	i := p.PixOffset(x, y)
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
-	return hsvcolor.NHSVA{H: s[0], S: s[1], V: s[2], A: s[3]}
+	return hsvcolor.NHSVA{H: s[0], S: s[1], I: s[2], A: s[3]}
 }
 
 // PixOffset returns the index of the first element of Pix that corresponds to
@@ -59,7 +59,7 @@ func (p *NHSVA) Set(x, y int, c color.Color) {
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
 	s[0] = c1.H
 	s[1] = c1.S
-	s[2] = c1.V
+	s[2] = c1.I
 	s[3] = c1.A
 }
 
@@ -72,7 +72,7 @@ func (p *NHSVA) SetNHSVA(x, y int, c hsvcolor.NHSVA) {
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
 	s[0] = c.H
 	s[1] = c.S
-	s[2] = c.V
+	s[2] = c.I
 	s[3] = c.A
 }
 
@@ -154,7 +154,7 @@ func (p *NHSVA64) NHSVA64At(x, y int) hsvcolor.NHSVA64 {
 	return hsvcolor.NHSVA64{
 		H: uint16(s[0])<<8 | uint16(s[1]),
 		S: uint16(s[2])<<8 | uint16(s[3]),
-		V: uint16(s[4])<<8 | uint16(s[5]),
+		I: uint16(s[4])<<8 | uint16(s[5]),
 		A: uint16(s[6])<<8 | uint16(s[7]),
 	}
 }
@@ -177,8 +177,8 @@ func (p *NHSVA64) Set(x, y int, c color.Color) {
 	s[1] = uint8(c1.H)
 	s[2] = uint8(c1.S >> 8)
 	s[3] = uint8(c1.S)
-	s[4] = uint8(c1.V >> 8)
-	s[5] = uint8(c1.V)
+	s[4] = uint8(c1.I >> 8)
+	s[5] = uint8(c1.I)
 	s[6] = uint8(c1.A >> 8)
 	s[7] = uint8(c1.A)
 }
@@ -194,8 +194,8 @@ func (p *NHSVA64) SetNHSVA64(x, y int, c hsvcolor.NHSVA64) {
 	s[1] = uint8(c.H)
 	s[2] = uint8(c.S >> 8)
 	s[3] = uint8(c.S)
-	s[4] = uint8(c.V >> 8)
-	s[5] = uint8(c.V)
+	s[4] = uint8(c.I >> 8)
+	s[5] = uint8(c.I)
 	s[6] = uint8(c.A >> 8)
 	s[7] = uint8(c.A)
 }
@@ -276,7 +276,7 @@ func (p *NHSVAF64) NHSVAF64At(x, y int) hsvcolor.NHSVAF64 {
 	}
 	i := p.PixOffset(x, y)
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
-	return hsvcolor.NHSVAF64{H: s[0], S: s[1], V: s[2], A: s[3]}
+	return hsvcolor.NHSVAF64{H: s[0], S: s[1], I: s[2], A: s[3]}
 }
 
 // PixOffset returns the index of the first element of Pix that corresponds to
@@ -295,7 +295,7 @@ func (p *NHSVAF64) Set(x, y int, c color.Color) {
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
 	s[0] = c1.H
 	s[1] = c1.S
-	s[2] = c1.V
+	s[2] = c1.I
 	s[3] = c1.A
 }
 
@@ -308,7 +308,7 @@ func (p *NHSVAF64) SetNHSVAF64(x, y int, c hsvcolor.NHSVAF64) {
 	s := p.Pix[i : i+4 : i+4] // Small cap improves performance, see https://golang.org/issue/27857
 	s[0] = c.H
 	s[1] = c.S
-	s[2] = c.V
+	s[2] = c.I
 	s[3] = c.A
 }
 

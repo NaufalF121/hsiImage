@@ -30,6 +30,10 @@ func max3uint32(a, b, c uint32) uint32 {
 	return m
 }
 
+func avarage(a, b, c uint32) uint32 {
+	return (a + b + c) / 3
+}
+
 // nhsvaFloat64ToRGBA is a helper function for NHSVA.RGBA and NHSVA64.RGBA that
 // converts float64 versions of H, S, V, and A to RGBA.
 func nhsvaFloat64ToRGBA(hf, sf, vf, af float64) (r uint32, g uint32, b uint32, a uint32) {
@@ -74,7 +78,7 @@ func nhsvaFloat64ToRGBA(hf, sf, vf, af float64) (r uint32, g uint32, b uint32, a
 // from 0 to 359 and saturation and value to range from 0 to 1, but that's not
 // what we do here.)
 type NHSVA struct {
-	H, S, V, A uint8
+	H, S, I, A uint8
 }
 
 // nhsvaModel converts an arbitrary color to an NHSVA color.
@@ -92,7 +96,7 @@ func nhsvaModel(c color.Color) color.Color {
 	return NHSVA{
 		H: scale(nhsva64.H),
 		S: scale(nhsva64.S),
-		V: scale(nhsva64.V),
+		I: scale(nhsva64.I),
 		A: scale(nhsva64.A),
 	}
 }
@@ -104,7 +108,7 @@ var NHSVAModel color.Model = color.ModelFunc(nhsvaModel)
 // RGBA converts an NHSVA color to alpha-premultiplied RGBA.
 func (c NHSVA) RGBA() (r, g, b, a uint32) {
 	// Handle the easy case: a grayscale value.
-	v16 := uint32(c.V) // 16-bit value in a 32-bit field
+	v16 := uint32(c.I) // 16-bit value in a 32-bit field
 	v16 |= v16 << 8
 	a16 := uint32(c.A) // 16-bit alpha in a 32-bit field
 	a16 |= a16 << 8
@@ -117,7 +121,7 @@ func (c NHSVA) RGBA() (r, g, b, a uint32) {
 	// conversion formulas on the Web assume real values.
 	hf := float64(c.H) * 360.0 / 255.0
 	sf := float64(c.S) / 255.0
-	vf := float64(c.V) / 255.0
+	vf := float64(c.I) / 255.0
 	af := float64(c.A) / 255.0
 	return nhsvaFloat64ToRGBA(hf, sf, vf, af)
 }
@@ -127,7 +131,7 @@ func (c NHSVA) RGBA() (r, g, b, a uint32) {
 // range from 0 to 359 and saturation and value to range from 0 to 1, but
 // that's not what we do here.)
 type NHSVA64 struct {
-	H, S, V, A uint16
+	H, S, I, A uint16
 }
 
 // nhsva64Model converts an arbitrary color to an NHSVA64 color.
@@ -149,16 +153,17 @@ func nhsva64Model(c color.Color) color.Color {
 	// Compute the easy channels: saturation and value.
 	cMin := min3uint32(r, g, b)
 	cMax := max3uint32(r, g, b)
+	avg := avarage(r, g, b)
 	delta := cMax - cMin
-	v := cMax
+	i := avg
 	var s uint32
 	if cMax > 0 {
-		s = (65535 * delta) / cMax
+		s = 1 - (cMin * 65535 / i)
 	}
 
 	// Compute hue.
-	if delta == 0 {
-		return NHSVA64{0, 0, uint16(v), uint16(a)} // Gray + alpha
+	if i == 0 {
+		return NHSVA64{0, 0, uint16(i), uint16(a)} // Gray + alpha
 	}
 	var h360 int // Hue in the range [0, 360]
 	ri, gi, bi, di := int(r), int(g), int(b), int(delta)
@@ -174,7 +179,7 @@ func nhsva64Model(c color.Color) color.Color {
 	h := uint32((h360*65535 + 180) / 360) // Scale to [0, 65535].
 
 	// Return an NHSVA color.
-	return NHSVA64{uint16(h), uint16(s), uint16(v), uint16(a)}
+	return NHSVA64{uint16(h), uint16(s), uint16(i), uint16(a)}
 }
 
 // NHSVA64Model is a color model for NHSVA64 (non-alpha-premultiplied hue,
@@ -186,7 +191,7 @@ func (c NHSVA64) RGBA() (r, g, b, a uint32) {
 	// Handle the easy case: a grayscale value.
 	a16 := uint32(c.A)
 	if c.S == 0 {
-		v16pm := (uint32(c.V)*a16 + 32768) / 65535
+		v16pm := (uint32(c.I)*a16 + 32768) / 65535
 		return v16pm, v16pm, v16pm, a16
 	}
 
@@ -194,7 +199,7 @@ func (c NHSVA64) RGBA() (r, g, b, a uint32) {
 	// conversion formulas on the Web assume real values.
 	hf := float64(c.H) * 360.0 / 65535.0
 	sf := float64(c.S) / 65535.0
-	vf := float64(c.V) / 65535.0
+	vf := float64(c.I) / 65535.0
 	af := float64(c.A) / 65535.0
 	return nhsvaFloat64ToRGBA(hf, sf, vf, af)
 }
@@ -203,7 +208,7 @@ func (c NHSVA64) RGBA() (r, g, b, a uint32) {
 // represented by a 64-bit floating-point number.  In this representation, hue
 // is a value in [0, 360); and the remaining channels are values in [0, 1].
 type NHSVAF64 struct {
-	H, S, V, A float64
+	H, S, I, A float64
 }
 
 // nhsvaF64Model converts an arbitrary color to an NHSVAF64 color.
@@ -232,15 +237,16 @@ func nhsvaF64Model(c color.Color) color.Color {
 	cMin := math.Min(math.Min(rf, gf), bf)
 	cMax := math.Max(math.Max(rf, gf), bf)
 	delta := cMax - cMin
-	vf := cMax
+	avg := (rf + gf + bf) / 3.0
+	If := avg
 	var sf float64
 	if cMax > 0.00 {
-		sf = delta / cMax
+		sf = cMin / avg
 	}
 
 	// Compute hue.
-	if delta == 0.0 {
-		return NHSVAF64{0.0, 0.0, vf, af} // Gray + alpha
+	if If == 0.0 {
+		return NHSVAF64{0.0, 0.0, If, af} // Gray + alpha
 	}
 	var hf float64
 	switch cMax {
@@ -254,7 +260,7 @@ func nhsvaF64Model(c color.Color) color.Color {
 	hf = math.Mod(hf*60.0+360.0, 360.0)
 
 	// Return an NHSVAF64 color.
-	return NHSVAF64{hf, sf, vf, af}
+	return NHSVAF64{hf, sf, If, af}
 }
 
 // NHSVAF64Model is a color model for NHSVAF64 (non-alpha-premultiplied hue,
@@ -270,7 +276,7 @@ func (c NHSVAF64) RGBA() (r, g, b, a uint32) {
 	wrap360 := func(x float64) float64 { return math.Mod(math.Mod(x, 360.0)+360.0, 360.0) }
 	hf := wrap360(c.H)
 	sf := clamp01(c.S)
-	vf := clamp01(c.V)
+	vf := clamp01(c.I)
 	af := clamp01(c.A)
 
 	// Handle the easy case: a grayscale value.
